@@ -48,6 +48,7 @@ white_wine$quality |> class()
 white_wine[["quality"]] |> class()
 white_wine$`fixed acidity` |> class()
 white_wine[["fixed acidity"]] |> class()
+
 ## dplyr style
 white_wine |>
   pull(quality) |>
@@ -206,3 +207,60 @@ white_wine |>
   facet_wrap(vars(`alcohol category`))
 ```
 
+## Aggregation functions
+
+A.k.a. summary functions: turn a possibly long vector into a single value (still a vector).
+
+- standard statistics: `max()`, `min()`, `median()`, etc.
+- logical operations: `any()` and `all()`
+- counts and ranks: `n()`
+
+### Simple summary use
+Based on `summarise()` function or inside a `mutate()` call.
+
+```{r}
+white_wine |>
+  summarise(
+    med_alcohol = median(alcohol),
+    sd(alcohol)
+  )
+## there are as many columns as things I have asked for but only one column.
+```
+A |> f(B) |> g(C)
+is same as
+g(f(A,B), c)
+
+
+```{r}
+white_wine |>
+  select(alcohol) |>
+  mutate(n_a = median(alcohol))
+```
+
+```{r}
+white_wine |>
+  select(alcohol) |>
+  mutate(alc_m_median = alcohol - median(alcohol),
+         .keep = "none")
+```
+
+
+```{r}
+white_wine |>
+  select(alcohol) |>
+  mutate(
+    normalc = (alcohol - mean(alcohol))/sd(alcohol),
+    normalized_alc_robust = (alcohol - median(alcohol))/IQR(alcohol),
+         .keep = "none")
+```
+
+```{r}
+white_wine |>
+  summarize(
+    mean(alcohol),
+    sd(alcohol),
+    median(alcohol),
+    IQR(alcohol),
+    .keep(none)
+    )
+```
