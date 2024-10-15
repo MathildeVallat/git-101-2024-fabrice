@@ -244,6 +244,7 @@ white_wine |>
          .keep = "none")
 ```
 
+A robust statistic is difficult to manipulate. Fx you cannot change median salary of the class by simply changing one value (median is robust). You CAN change the mean salary of the class if you add an Mbappé (mean is not robust bc easy to manipulate). 
 
 ```{r}
 white_wine |>
@@ -260,7 +261,51 @@ white_wine |>
     mean(alcohol),
     sd(alcohol),
     median(alcohol),
-    IQR(alcohol),
-    .keep(none)
+    IQR(alcohol)
     )
 ```
+## More complex summary functions
+Essentially `quantile()`.
+
+```{r}
+quantile(white_wine$`residual sugar`)
+```
+
+
+```{r}
+quantile(white_wine$`residual sugar`, probs = seq(0,1,0.1))
+```
+
+Here we have extreme right shift of distribution. Let's look at mean to see Mbappe effect.
+
+```{r}
+mean(white_wine$`residual sugar`)
+median(white_wine$`residual sugar`)
+```
+
+
+```{r}
+white_wine |>
+  summarise(quantile(`residual sugar`))
+```
+
+
+```{r}
+white_wine |>
+  reframe(quantile(`residual sugar`),
+          mean(`residual sugar`))
+```
+Summarise has other functionalities (grouping) and the functionality that is interesting here is moved in reframe.
+Here mean is copied bc dataframe so quantile has to be same size as mean.
+SO REFRAME IS SOLUTION
+
+```{r}
+sugar_stats = white_wine |>
+  summarise(list(quantile(`residual sugar`)),
+            mean(`residual sugar`))
+```
+This can be useful not here but fx if you have multiple subpopulations. You know heterogenerity is explanatory so you make linear model for men, linear model for men.
+
+The lin model is a form of complex summary. Hence with reframe we can do that in a clean way.
+
+
